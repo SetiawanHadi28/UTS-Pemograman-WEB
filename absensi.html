@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistem Absensi Kelas</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d0f1a;
+      --surface: #151829;
+      --surface2: #1c2038;
+      --border: #252a45;
+      --accent: #4f8cff;
+      --accent2: #a78bfa;
+      --hadir: #22d3a5;
+      --sakit: #f59e0b;
+      --izin: #60a5fa;
+      --tanpa: #f87171;
+      --text: #e8eaf6;
+      --muted: #6b7280;
+      --card-shadow: 0 4px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(79, 140, 255, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(167, 139, 250, 0.10) 0%, transparent 60%);
+    }
+
+    /* HEADER */
+    header {
+      padding: 32px 40px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .logo-text h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-text p {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .header-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 8px;
+    }
+
+    /* MAIN */
+    main {
+      max-width: 1100px;
+      margin: 36px auto;
+      padding: 0 24px;
+    }
+
+    /* FORM SECTION */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 32px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .form-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-title span {
+      font-size: 1.3rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-family: 'Sora', sans-serif;
+      font-size: 0.92rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.15);
+    }
+
+    .field select option {
+      background: var(--surface2);
+    }
+
+    /* STATUS BUTTONS */
+    .status-group {
+      margin-bottom: 24px;
+    }
+
+    .status-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+    }
+
+    .status-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-btn {
+      flex: 1;
+      min-width: 100px;
+      padding: 14px 10px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      background: var(--surface2);
+      font-family: 'Sora', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+      color: var(--muted);
+      letter-spacing: 0.3px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-btn .icon {
+      font-size: 1.4rem;
+    }
+
+    .status-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .status-btn[data-status="HADIR"].active {
+      background: rgba(34, 211, 165, 0.12);
+      border-color: var(--hadir);
+      color: var(--hadir);
+    }
+
+    .status-btn[data-status="SAKIT"].active {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: var(--sakit);
+      color: var(--sakit);
+    }
+
+    .status-btn[data-status="IZIN"].active {
+      background: rgba(96, 165, 250, 0.12);
+      border-color: var(--izin);
+      color: var(--izin);
+    }
+
+    .status-btn[data-status="TANPA KETERANGAN"].active {
+      background: rgba(248, 113, 113, 0.12);
+      border-color: var(--tanpa);
+      color: var(--tanpa);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .btn-submit:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    /* STATS */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 640px) {
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .stat-card.hadir::before {
+      background: var(--hadir);
+    }
+
+    .stat-card.sakit::before {
+      background: var(--sakit);
+    }
+
+    .stat-card.izin::before {
+      background: var(--izin);
+    }
+
+    .stat-card.tanpa::before {
+      background: var(--tanpa);
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .stat-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .stat-card.hadir .stat-num {
+      color: var(--hadir);
+    }
+
+    .stat-card.sakit .stat-num {
+      color: var(--sakit);
+    }
+
+    .stat-card.izin .stat-num {
+      color: var(--izin);
+    }
+
+    .stat-card.tanpa .stat-num {
+      color: var(--tanpa);
+    }
+
+    /* TABLE */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+    }
+
+    .table-header {
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .table-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-family: 'Sora', sans-serif;
+      font-size: 0.85rem;
+      color: var(--text);
+      outline: none;
+      width: 200px;
+      transition: border-color 0.2s;
+    }
+
+    .search-box:focus {
+      border-color: var(--accent);
+    }
+
+    .filter-sel {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 0.85rem;
+      color: var(--text);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn-clear {
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-family: 'Sora', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--tanpa);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-clear:hover {
+      background: rgba(248, 113, 113, 0.2);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      padding: 13px 20px;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+      animation: rowIn 0.3s ease;
+    }
+
+    @keyframes rowIn {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    tbody tr:hover {
+      background: var(--surface2);
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody td {
+      padding: 14px 20px;
+      font-size: 0.88rem;
+    }
+
+    .no-col {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .time-col {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .badge.HADIR {
+      background: rgba(34, 211, 165, 0.12);
+      color: var(--hadir);
+    }
+
+    .badge.SAKIT {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--sakit);
+    }
+
+    .badge.IZIN {
+      background: rgba(96, 165, 250, 0.12);
+      color: var(--izin);
+    }
+
+    .badge.TANPA {
+      background: rgba(248, 113, 113, 0.12);
+      color: var(--tanpa);
+    }
+
+    .btn-del {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 1rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .btn-del:hover {
+      color: var(--tanpa);
+      background: rgba(248, 113, 113, 0.1);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state .icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .empty-state p {
+      font-size: 0.9rem;
+    }
+
+    /* TOAST */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 22px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 32px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">📋</div>
+      <div class="logo-text">
+        <h1>Sistem Absensi</h1>
+        <p>localStorage · v1.0</p>
+      </div>
+    </div>
+    <div class="header-date" id="headerDate"></div>
+  </header>
+
+  <main>
+
+    <!-- FORM -->
+    <div class="form-card">
+      <div class="form-title"><span>✏️</span> Input Absensi</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Nama Lengkap</label>
+          <input type="text" id="inputNama" placeholder="Nama siswa..." />
+        </div>
+        <div class="field">
+          <label>NIM / NIS</label>
+          <input type="text" id="inputNim" placeholder="Nomor induk..." />
+        </div>
+        <div class="field">
+          <label>Mata Kuliah / Kelas</label>
+          <input type="text" id="inputKelas" placeholder="Mata Kuliah Hari ini..." />
+        </div>
+        <div class="field">
+          <label>Tanggal</label>
+          <input type="date" id="inputTanggal" />
+        </div>
+      </div>
+
+      <div class="status-group">
+        <label>Keterangan Kehadiran</label>
+        <div class="status-buttons">
+          <button class="status-btn" data-status="HADIR">
+            <span class="icon">✅</span> HADIR
+          </button>
+          <button class="status-btn" data-status="SAKIT">
+            <span class="icon">🤒</span> SAKIT
+          </button>
+          <button class="status-btn" data-status="IZIN">
+            <span class="icon">📝</span> IZIN
+          </button>
+          <button class="status-btn" data-status="TANPA KETERANGAN">
+            <span class="icon">❌</span> TANPA KETERANGAN
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-submit" onclick="simpanAbsen()">💾 Simpan Absensi</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card hadir">
+        <div class="stat-label">Hadir</div>
+        <div class="stat-num" id="statHadir">0</div>
+      </div>
+      <div class="stat-card sakit">
+        <div class="stat-label">Sakit</div>
+        <div class="stat-num" id="statSakit">0</div>
+      </div>
+      <div class="stat-card izin">
+        <div class="stat-label">Izin</div>
+        <div class="stat-num" id="statIzin">0</div>
+      </div>
+      <div class="stat-card tanpa">
+        <div class="stat-label">Tanpa Ket.</div>
+        <div class="stat-num" id="statTanpa">0</div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+      <div class="table-header">
+        <h2>📊 Rekap Absensi</h2>
+        <div class="table-controls">
+          <input class="search-box" type="text" id="searchBox" placeholder="🔍 Cari nama..." oninput="renderTable()" />
+          <select class="filter-sel" id="filterStatus" onchange="renderTable()">
+            <option value="">Semua Status</option>
+            <option value="HADIR">Hadir</option>
+            <option value="SAKIT">Sakit</option>
+            <option value="IZIN">Izin</option>
+            <option value="TANPA KETERANGAN">Tanpa Keterangan</option>
+          </select>
+          <button class="btn-clear" onclick="hapusSemua()">🗑 Hapus Semua</button>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>NIM / NIS</th>
+            <th>Kelas / MK</th>
+            <th>Tanggal</th>
+            <th>Waktu</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState" style="display:none">
+        <span class="icon">📭</span>
+        <p>Belum ada data absensi.<br>Isi form di atas untuk mulai.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>Sistem Absensi &mdash; Data tersimpan di LocalStorage Browser &copy; 2026</footer>
+
+  <div id="toast"></div>
+
+  <script>
+    const KEY = 'absensi_data';
+    let selectedStatus = '';
+
+    // Init
+    document.getElementById('inputTanggal').valueAsDate = new Date();
+    updateHeaderDate();
+
+    function updateHeaderDate() {
+      const now = new Date();
+      document.getElementById('headerDate').textContent =
+        now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    // Status button selection
+    document.querySelectorAll('.status-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedStatus = btn.dataset.status;
+      });
+    });
+
+    function getData() {
+      return JSON.parse(localStorage.getItem(KEY) || '[]');
+    }
+    function saveData(data) {
+      localStorage.setItem(KEY, JSON.stringify(data));
+    }
+
+    function simpanAbsen() {
+      const nama = document.getElementById('inputNama').value.trim();
+      const nim = document.getElementById('inputNim').value.trim();
+      const kelas = document.getElementById('inputKelas').value.trim();
+      const tgl = document.getElementById('inputTanggal').value;
+
+      if (!nama) return showToast('⚠️ Nama tidak boleh kosong!', '#f87171');
+      if (!nim) return showToast('⚠️ NIM/NIS tidak boleh kosong!', '#f87171');
+      if (!kelas) return showToast('⚠️ Kelas/Mata Kuliah tidak boleh kosong!', '#f87171');
+      if (!tgl) return showToast('⚠️ Tanggal tidak boleh kosong!', '#f87171');
+      if (!selectedStatus) return showToast('⚠️ Pilih keterangan kehadiran!', '#f87171');
+
+      const now = new Date();
+      const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+      const entry = { id: Date.now(), nama, nim, kelas, tanggal: tgl, waktu, status: selectedStatus };
+      const data = getData();
+      data.unshift(entry);
+      saveData(data);
+
+      // Reset
+      document.getElementById('inputNama').value = '';
+      document.getElementById('inputNim').value = '';
+      document.getElementById('inputKelas').value = '';
+      document.getElementById('inputTanggal').valueAsDate = new Date();
+      document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+      selectedStatus = '';
+
+      renderTable();
+      updateStats();
+      showToast('✅ Absensi berhasil disimpan!', '#22d3a5');
+    }
+
+    function hapusEntry(id) {
+      const data = getData().filter(d => d.id !== id);
+      saveData(data);
+      renderTable();
+      updateStats();
+      showToast('🗑 Data dihapus.', '#f59e0b');
+    }
+
+    function hapusSemua() {
+      if (!confirm('Yakin hapus semua data absensi?')) return;
+      localStorage.removeItem(KEY);
+      renderTable();
+      updateStats();
+      showToast('🗑 Semua data dihapus.', '#f87171');
+    }
+
+    function renderTable() {
+      const data = getData();
+      const q = document.getElementById('searchBox').value.toLowerCase();
+      const f = document.getElementById('filterStatus').value;
+
+      const filtered = data.filter(d => {
+        const matchSearch = d.nama.toLowerCase().includes(q) || d.nim.toLowerCase().includes(q);
+        const matchFilter = f ? d.status === f : true;
+        return matchSearch && matchFilter;
+      });
+
+      const tbody = document.getElementById('tableBody');
+      const empty = document.getElementById('emptyState');
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      tbody.innerHTML = filtered.map((d, i) => {
+        const tglFmt = new Date(d.tanggal + 'T00:00:00').toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+        const badgeKey = d.status === 'TANPA KETERANGAN' ? 'TANPA' : d.status;
+        return `
+        <tr>
+          <td class="no-col">${i + 1}</td>
+          <td><strong>${d.nama}</strong></td>
+          <td class="no-col">${d.nim}</td>
+          <td>${d.kelas}</td>
+          <td>${tglFmt}</td>
+          <td class="time-col">${d.waktu}</td>
+          <td><span class="badge ${badgeKey}">${d.status}</span></td>
+          <td><button class="btn-del" onclick="hapusEntry(${d.id})" title="Hapus">🗑</button></td>
+        </tr>`;
+      }).join('');
+    }
+
+    function updateStats() {
+      const data = getData();
+      document.getElementById('statHadir').textContent = data.filter(d => d.status === 'HADIR').length;
+      document.getElementById('statSakit').textContent = data.filter(d => d.status === 'SAKIT').length;
+      document.getElementById('statIzin').textContent = data.filter(d => d.status === 'IZIN').length;
+      document.getElementById('statTanpa').textContent = data.filter(d => d.status === 'TANPA KETERANGAN').length;
+    }
+
+    function showToast(msg, color = '#4f8cff') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.borderColor = color;
+      t.style.color = color;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // Initial render
+    renderTable();
+    updateStats();
+  </script>
+</body>
+
+</html>
